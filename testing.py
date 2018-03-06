@@ -1,45 +1,133 @@
 #-*- coding:utf-8 -*-
 from __future__ import unicode_literals
-import api
-import testing
+import requests as r
+import sys, time
 import jwt
 
-def match_jwt(res):
-    encode = (res.json())["data"]
-    return testing.feasible_jwt(encode)
+def feasible_jwt(a):
+    pass
 
-def testing_case():
-    a = api.Api("http", "localhost:8082", "api/v1.0")
-    t = testing.Testing()
+class HTTPCodeError(Exception):
+    pass
 
-    # test case 1
-    @t.api_testing("Register")
-    @t.result_should_be(lambda res : (res.json())["code"] is not 2)
-    @t.http_code_testing
-    @t.timing
-    def test_Register_once():
-        res = a.Register(
-            id      = "a",
-            pwd     = "202cb962ac59075b964b07152d234b70",
-            name    = "jamie2")
-        return res
-    res = test_Register_once()
+class NotMatchError(Exception):
+    pass
 
-    # test case 2
-    @t.api_testing("Register")
-    @t.result_should_be(match_jwt)
-    @t.http_code_testing
-    @t.timing
-    def test_Login_once():
-        res = a.Login(
-            id      = "a",
-            pwd     = "202cb962ac59075b964b07152d234b70")
-        return res
-    res = test_Login_once()
+class Testing:
 
-    t.print_all()
+    def __init__(self):
+        self._all_num = 0
+        self._pass_num = 0
+        self._fail_num = 0
+        self._http_code_error = 0
+        self._not_match = 0
+        self._connection_error = 0
+        self._other_error = 0
 
-if __name__ == '__main__':
-    #testing_case()
-    a = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImEiLCJuYW1lIjoiamFtaWUyIiwib3BlbmlkIjoiIiwidW5pb25pZCI6IiIsInBlcm1pc3Npb24iOnt9LCJleHAiOjE1MjI5MjYwMTMsImlz\ncyI6IlVsdHJhYmVhci1BdXRoLVNlcnZpY2UiLCJuYmYiOjE1MjAzMzQwMTN9.VT-9bEt4SenN-NbZlDu2OOVV9q39FqqnDsaQZlBybkw"
-    print jwt.decode(a, 'secret', algorithm="HMAC")
+    def clear(self):
+        self._all_num = 0
+        self._pass_num = 0
+        self._fail_num = 0
+        self._http_code_error = 0
+        self._not_match = 0
+        self._connection_error = 0
+        self._other_error = 0
+
+    def print_all(self):
+        print "\n----------"
+        print "all cases:" + str(self._all_num)
+        print "passes cases:" + str(self._pass_num)
+        print "failed cases:" + str(self._fail_num)
+
+    '''
+    frame work for single api testing, catch exceptions and judge if passes
+    api_name: str: api_name
+    '''
+    def api_testing(self, api_name):
+        def dec(f):
+            def func(*args, **kwds):
+                #TODO
+                self._all_num += 1
+                print "-----" + api_name + "-----"
+                try:
+                    res = f(*args, **kwds)
+                except Exception as err:
+                    self._fail_num += 1
+                    print "FAIL: ",
+                    if isinstance(err, HTTPCodeError):
+                        #TODO
+                        self._http_code_error += 1
+                        print "HTTPCodeError"
+                    elif isinstance(err, NotMatchError):
+                        #TODO
+                        self._not_match += 1
+                        print "Result is not what we want"
+                    elif isinstance(err, r.models.ConnectionError):
+                        #TODO
+                        self._connection_error += 1
+                        print "ConnectionError"
+                    else:
+                        self._other_error += 1
+                        print sys.exc_info()[0]
+                    print "\n"
+                else:
+                    self._pass_num += 1
+                    print "PASS\n"
+                    return res
+            return func
+        return dec
+
+    '''
+    raise NotMatchError if result cannot match what we want
+    f_match: function: return True if result meet what we want
+    '''
+    def result_should_be(self, f_match = lambda x : True):
+        def dec(f):
+            def func(*args, **kwds):
+                try:
+                    res = f(*args, **kwds)
+                except:
+                    raise
+                else:
+                    if not f_match(res):
+                        #TODO: show diff
+                        print ">>>>> FAILED RESPONSE TEXT:"
+                        print res.text
+                        raise NotMatchError()
+                    print ">>>>> Result is what we want"
+                    print res.text
+                    return res
+            return func
+        return dec
+
+    '''
+    timer
+    '''
+    def timing(self, f):
+        def func(*args, **kwds):
+            start = time.time()
+            try:
+                res = f(*args, **kwds)
+            except:
+                raise
+            stop = time.time()
+            print ">>>>> finished within " + str(1000*(stop - start)) + " ms"
+            return res
+        return func
+
+    '''
+    raise HTTPCodeError if response http code is not 200
+    '''
+    def http_code_testing(self, f):
+        def func(*args, **kwds):
+            try:
+                res = f(*args, **kwds)
+            except:
+                raise
+            if res.status_code is not 200:
+                print ">>>>> FAILED RESPONSE TEXT:"
+                print res.text
+                raise HTTPCodeError()
+            print ">>>>> [200 OK]"
+            return res
+        return func

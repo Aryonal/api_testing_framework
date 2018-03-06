@@ -73,19 +73,19 @@ class Api:
         print "data: " + str(data)
         return res
 
-    def Signup(self, phone, school, grade, experience):
+    def Signup(self, phone, school, grade, experienced):
         '''
         phone:          "7272178348"
         school:         "Primary"
         grade:          5
-        experience:     true
+        experienced:     true
         '''
         url = self.domain + "auth/" + self.prefix + "/login"
         data = {
             "phone": phone,
             "school": school,
             "grade": grade,
-            "experience": experience
+            "experienced": experienced
         }
         res = r.post(url, json = data)
         print "POST: " + url
