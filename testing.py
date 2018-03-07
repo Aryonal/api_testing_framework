@@ -4,15 +4,6 @@ import requests as r
 import sys, time
 import jwt
 
-def feasible_jwt(a):
-    try:
-        d = jwt.decode(a, '', algorithms=['HS256'])
-    except:
-        raise
-    else:
-        if d["iss"] is 'Ultrabear-Auth-Service':
-            return True
-        return False
 
 class HTTPCodeError(Exception):
     pass

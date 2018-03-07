@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 import api
 import testing
+import jwt
 
 a = api.Api("http", "localhost:8082", "api/v1.0")
 t = testing.Testing()
@@ -25,7 +26,17 @@ def test_Register_once(
 
 def match_jwt(res):
     encode = (res.json())["data"]
-    return testing.feasible_jwt(encode)
+    return feasible_jwt(encode)
+
+def feasible_jwt(a):
+    try:
+        d = jwt.decode(a, verify=False)
+    except:
+        return False
+    else:
+        if d["iss"] == 'Ultrabear-Auth-Service':
+            return True
+        return False
 
 # test case 2
 @t.api_testing("Login")
