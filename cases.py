@@ -15,11 +15,11 @@ def set(protocol, addr, prefix):
 @t.result_should_be(lambda res : (res.json())["code"] is not 2)
 @t.http_code_testing
 @t.timing
-def test_Register_once():
-    res = a.Register(
-        id      = "a",
-        pwd     = "202cb962ac59075b964b07152d234b70",
-        name    = "jamie2")
+def test_Register_once(
+    id      = "a",
+    pwd     = "202cb962ac59075b964b07152d234b70",
+    name    = "jamie2"):
+    res = a.Register(id, pwd, name)
     return res
 
 
@@ -32,10 +32,10 @@ def match_jwt(res):
 @t.result_should_be(match_jwt)
 @t.http_code_testing
 @t.timing
-def test_Login_once():
-    res = a.Login(
-        id      = "a",
-        pwd     = "202cb962ac59075b964b07152d234b70")
+def test_Login_once(
+    id      = "a",
+    pwd     = "202cb962ac59075b964b07152d234b70"):
+    res = a.Login(id, pwd)
     return res
 
 # test case 3
@@ -43,11 +43,11 @@ def test_Login_once():
 @t.result_should_be(lambda res : (res.json())["code"] is not 2)
 @t.http_code_testing
 @t.timing
-def test_addID_once():
-    res = a.AddID(
-        id      = "a",
-        pwd     = "202cb962ac59075b964b07152d234b70",
-        name    = "jamie2")
+def test_addID_once(
+    id      = "a",
+    pwd     = "202cb962ac59075b964b07152d234b70",
+    name    = "jamie2"):
+    res = a.AddID(id, pwd, name)
     return res
 
 # test case 4
@@ -55,10 +55,10 @@ def test_addID_once():
 @t.result_should_be(lambda res : (res.json())["code"] is not 2)
 @t.http_code_testing
 @t.timing
-def test_Signup_once():
-    res = a.Signup(
-        phone       = "7272178348",
-        school      = "Primary",
-        grade       = 5,
-        experienced  = True)
+def test_Signup_once(
+    phone       = "7272178348",
+    school      = "Primary",
+    grade       = 5,
+    experienced  = True):
+    res = a.Signup(phone, school, grade, experienced)
     return res

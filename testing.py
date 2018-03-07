@@ -5,7 +5,14 @@ import sys, time
 import jwt
 
 def feasible_jwt(a):
-    pass
+    try:
+        d = jwt.decode(a, '', algorithms=['HS256'])
+    except:
+        raise
+    else:
+        if d["iss"] is 'Ultrabear-Auth-Service':
+            return True
+        return False
 
 class HTTPCodeError(Exception):
     pass
@@ -111,7 +118,7 @@ class Testing:
             except:
                 raise
             stop = time.time()
-            print ">>>>> finished within " + str(1000*(stop - start)) + " ms"
+            print ">>>>> finished within " + str(1000*(stop-start)) + " ms"
             return res
         return func
 
