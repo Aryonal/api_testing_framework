@@ -4,22 +4,49 @@ for Ultrabear api testing
 ## 工程目录
 ```
 .
-├── __init__.py
-├── api.py
+├── api
+│   ├── assets.py
+│   ├── auth.py
+│   └── __init__.py
 ├── cases.py
+├── __init__.py
 ├── main.py
-├── testing.py
-└── README.MD
+├── README.MD
+└── testing.py
+
+2 directories, 9 files
+
 ```
 
-### api.py
+### api
 
-用 `requests` 封装的 api 接口，目前只封装了 `domain/auth` 下的接口，包括
-- Register
-- Login
-- Signup
-- AddID
-- SetRole
+```python
+import api
+```
+
+用 `requests` 封装的 api 接口，目前只封装了 `domain/auth` 与 `domain/assets` 下的接口，包括
+- auth
+    - Register
+    - Login
+    - Signup
+    - AddID
+    - SetRole
+- assets
+    - project_detail_by_id
+    - custom_detail_by_name
+    - custumes_list
+    - get_asset_with_md5_url
+    - sounds_list
+    - backdrops_list
+    - sound_detail_by_name
+    - user_projects_list
+    - projects_list
+    - backdrop_detail_by_name
+    - upload_custume
+    - upload_sound
+    - upload_backdrops
+    - duplicate_project
+    - upload_project
 
 ### testing.py
 

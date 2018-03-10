@@ -77,7 +77,7 @@ class Testing:
 
     '''
     raise NotMatchError if result cannot match what we want
-    f_match: function: return True if result meet what we want
+    f_match: function: return True if result meets what we want
     '''
     def result_should_be(self, f_match = lambda x : True):
         def dec(f):
