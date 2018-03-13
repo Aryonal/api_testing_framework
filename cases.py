@@ -4,12 +4,8 @@ import api
 import testing
 import jwt
 
-a = api.Api("http", "localhost:8082", "api/v1.0")
+api.set("http", "localhost:8082", "api/v1.0")
 t = testing.Testing()
-
-# setting
-def set(protocol, addr, prefix):
-    a = api.Api(protocol, addr, prefix)
 
 # test case 1
 @t.api_testing("Register")
@@ -20,7 +16,7 @@ def test_Register_once(
     id      = "a",
     pwd     = "202cb962ac59075b964b07152d234b70",
     name    = "jamie2"):
-    res = a.Register(id, pwd, name)
+    res = api.auth.Register(id, pwd, name)
     return res
 
 
@@ -46,11 +42,11 @@ def feasible_jwt(a):
 def test_Login_once(
     id      = "a",
     pwd     = "202cb962ac59075b964b07152d234b70"):
-    res = a.Login(id, pwd)
+    res = api.auth.Login(id, pwd)
     return res
 
 # test case 3
-@t.api_testing("ADDID")
+@t.api_testing("AddID")
 @t.result_should_be(lambda res : (res.json())["code"] is not 2)
 @t.http_code_testing
 @t.timing
@@ -58,7 +54,7 @@ def test_addID_once(
     id      = "a",
     pwd     = "202cb962ac59075b964b07152d234b70",
     name    = "jamie2"):
-    res = a.AddID(id, pwd, name)
+    res = api.auth.AddID(id, pwd, name)
     return res
 
 # test case 4
@@ -71,5 +67,13 @@ def test_Signup_once(
     school      = "Primary",
     grade       = 5,
     experienced  = True):
-    res = a.Signup(phone, school, grade, experienced)
+    res = api.auth.Signup(phone, school, grade, experienced)
     return res
+
+if __name__ == '__main__':
+    api.set("http", "localhost:8082", "api/v1.0")
+    api.auth.Signup(
+        phone       = "7272178348",
+        school      = "Primary",
+        grade       = 5,
+        experienced  = True)
